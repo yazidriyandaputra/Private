@@ -682,16 +682,16 @@ def menu_awal():
                 time.sleep(1.5)
                 data_pemain = game_baru()
         elif pilihan == '2':
-            tampilkan_loading("Memuat game...")
             data_pemain = muat_game()
             if data_pemain:
+                tampilkan_loading("Memuat game...")
                 if intro_berjalan:
                     pygame.mixer.music.stop()
                 tampilkan_pesan("Game berhasil dimuat!", "sukses")
                 time.sleep(1.5)
                 tutorial_sudah = True
             else:
-                tampilkan_pesan("Tidak ada data game tersimpan.", "error")
+                tampilkan_pesan("Tidak ada data game tersimpan. Pilih mulai permainan baru!", "error")
                 if not intro_berjalan:
                     intro_berjalan = mainkan_musik_intro()
                 time.sleep(1.5)
