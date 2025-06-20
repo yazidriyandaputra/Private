@@ -726,7 +726,7 @@ def tampilkan_menu_aksi(data_pemain, tutorial_sudah, notifikasi_layu):
         print(menu_line[:Panjang_Header])
 
     if not tutorial_sudah:
-        tampilkan_tutorial(menu_items, baris_menu, kolom_lebar, Panjang_Header, data_pemain)
+        tampilkan_tutorial(data_pemain)
         tutorial_sudah = True
 
     if notifikasi_layu:
