@@ -140,7 +140,10 @@ def tampilkan_lahan(data_pemain):
                     tampilan = colored(f"[🌿{status_air}]", "cyan")
             tampilan_baris.append(tampilan)
         print(" ".join(tampilan_baris) + f"  B{i+1}")
-    print("\n" + " ".join([f" K{k+1} " for k in range(data_pemain['kolom_lahan'])]))
+    print("\n", end="")
+    for k in range(data_pemain['kolom_lahan']):
+        print(f" K{k+1} ", end=" ")
+    print()
     cprint("\nKeterangan: 🟫Kosong, 🌱Bibit, 🌿Tunas, P-Panen, 🚱Belum Disiram", 'grey')
 
 def tanam_bibit(data_pemain):
@@ -156,7 +159,6 @@ def tanam_bibit(data_pemain):
     if not ada_bibit:
         tampilkan_pesan("Kamu tidak punya bibit!", "error")
         return False
-    
     tampilkan_pesan("Bibit yang kamu miliki:", "info")
     for bibit, jumlah in data_pemain["bibit"].items():
         if jumlah > 0:
@@ -176,21 +178,21 @@ def tanam_bibit(data_pemain):
         tampilkan_pesan("Masukkan angka yang valid!", "error")
         return False
     kolom = int(kolom_input) - 1
-
+    if kolom == -1:
+            return False
+    
     bibit_ditanam = input("Pilih bibit yang ingin ditanam: ").lower()
     
     if bibit_ditanam not in data_pemain["bibit"] or data_pemain["bibit"][bibit_ditanam] <= 0:
         tampilkan_pesan(f"Kamu tidak punya bibit {bibit_ditanam}!", "error")
         return False
-        
     if not (0 <= baris < data_pemain["baris_lahan"] and 0 <= kolom < data_pemain["kolom_lahan"]):
         tampilkan_pesan("Lokasi tidak valid!", "error")
         return False
-        
     if data_pemain["lahan"][baris][kolom] is not None:
         tampilkan_pesan("Lokasi ini sudah terisi!", "error")
         return False
-        
+
     data_pemain["lahan"][baris][kolom] = {
         "nama": bibit_ditanam,
         "hari_tumbuh": Hari_Tumbuh[bibit_ditanam],
@@ -228,6 +230,8 @@ def siram_tanaman(data_pemain):
             tampilkan_pesan("Masukkan angka yang valid!", "error")
             time.sleep(1)
             continue
+        if kolom == -1:
+            return False
         
         if not (0 <= baris < data_pemain["baris_lahan"] and 0 <= kolom < data_pemain["kolom_lahan"]):
             tampilkan_pesan("Lokasi tidak valid!", "error")
@@ -383,7 +387,7 @@ def perluas_lahan(data_pemain):
         return
         
     biaya = (data_pemain["baris_lahan"] * data_pemain["kolom_lahan"]) * 10
-    ukuran_baru = f"{data_pemain['baris_lahan'] + 1}x{data_pemain['kolom_lahan'] + 1}"
+    ukuran_baru = f"{data_pemain["baris_lahan"] + 1}x{data_pemain["kolom_lahan"] + 1}"
     tampilkan_pesan(f"Biaya perluasan menjadi {ukuran_baru} adalah ${biaya}", "info")
     
     pilihan = input("Perluas lahan? (y/n) ").lower()
@@ -443,7 +447,7 @@ def pasar(data_pemain):
         tampilkan_header("🛒 PASAR 🛒")
         tampilkan_pesan(f"Uangmu saat ini: ${data_pemain['uang']} 💰", "info")
         print("\n1. Beli Bibit Tanaman 🌱\n2. Upgrade Kapasitas Air 💧\n3. Selesai")
-        
+
         pilihan = input("> ")
         if pilihan == '1':
             bersihkan_layar()
@@ -461,7 +465,7 @@ def pasar(data_pemain):
                    (bibit_dibeli == "lettuce" and not data_pemain.get("lettuce_terbuka")):
                     tampilkan_pesan("Bibit tidak tersedia atau belum terbuka.", "error")
                     tekan_enter()
-                    break
+                    continue
                 jumlah_input = input(f"Berapa banyak bibit {bibit_dibeli}? ")
                 if not jumlah_input.isdigit():
                     tampilkan_pesan("Masukkan angka yang valid!", "error")
@@ -480,8 +484,8 @@ def pasar(data_pemain):
             else:
                 tampilkan_pesan("Bibit tidak tersedia.", "error")
             tekan_enter()
-            break
-            
+            break 
+    
         elif pilihan == '2':
             bersihkan_layar()
             tampilkan_header("💧 UPGRADE AIR 💧")
@@ -507,13 +511,17 @@ def pasar(data_pemain):
                         tampilkan_pesan("Uang tidak cukup untuk upgrade.", "error")
             tekan_enter()
             break
+
         elif pilihan == '3':
             break
 
 def pengaturan(data_pemain):
     bersihkan_layar()
     tampilkan_header("⚙️ PENGATURAN ⚙️")
-    status_musik = "ON 🎵" if data_pemain.get("musik_nyala", False) else "OFF 🔇"
+    if data_pemain.get("musik_nyala", False):
+        status_musik = "ON 🎵" 
+    else:
+        status_musik = "OFF 🔇"
     print(f"1. Musik: {status_musik}\n2. Kembali")
     pilihan = input("\nPilih opsi: ")
     if pilihan == '1':
@@ -591,6 +599,29 @@ def tampilkan_loading(teks):
 
     time.sleep(1)
 
+def menu(data_pemain):
+    bersihkan_layar()
+    status = f"🗓 HARI KE-{data_pemain['hari']} | 💰 UANG: ${data_pemain['uang']} | 🏦 HUTANG: ${data_pemain['hutang']} "
+    cprint(status.center(Panjang_Header), "white", 'on_blue')
+    tampilkan_lahan(data_pemain)
+    tampilkan_header("PILIH AKSI")
+    menu_items = [
+    "1. 🌱 Tanam Bibit", "2. 🛒 Pasar", "3. 💧 Siram Tanaman", "4. 🧺 Panen",
+    "5. 💸 Jual Hasil", "6. 🎒 Inventaris", "7.  🏞️  Perluas Lahan",
+    "8.  😴 Tidur", "9.  🏦 Bank", "10. ⚙️  Pengaturan",
+    "11. 💾 Simpan & Keluar"
+]
+    baris_menu = 6
+    kolom_lebar = Panjang_Header // 2
+    for i in range(baris_menu):
+        kolom_kiri = menu_items[i]
+        if i + baris_menu < len(menu_items):
+            kolom_kanan = menu_items[i + baris_menu] 
+        else:
+            kolom_kanan = ""
+        menu_line = f"{kolom_kiri.ljust(kolom_lebar)}{kolom_kanan.ljust(kolom_lebar)}"
+        print(menu_line[:Panjang_Header])
+
 def tampilkan_tutorial(data_pemain):
     dialog = [
         ("Mas Joko", "😊", "Halo! Namaku Mas Joko, aku akan membantumu bertani di desa ini."),
@@ -601,27 +632,7 @@ def tampilkan_tutorial(data_pemain):
         ("Mas Joko", "😃", "Selamat bertani dan semoga sukses!"),
     ]
     for nama, ekspresi, kalimat in dialog:
-        bersihkan_layar()
-        status = f"🗓 HARI KE-{data_pemain['hari']} | 💰 UANG: ${data_pemain['uang']} | 🏦 HUTANG: ${data_pemain['hutang']} "
-        cprint(status.center(Panjang_Header), "white", 'on_blue')
-        tampilkan_lahan(data_pemain)
-        tampilkan_header("PILIH AKSI")
-        menu_items = [
-        "1. 🌱 Tanam Bibit", "2. 🛒 Pasar", "3. 💧 Siram Tanaman", "4. 🧺 Panen",
-        "5. 💸 Jual Hasil", "6. 🎒 Inventaris", "7.  🏞️  Perluas Lahan",
-        "8.  😴 Tidur", "9.  🏦 Bank", "10. ⚙️  Pengaturan",
-        "11. 💾 Simpan & Keluar"
-    ]
-        baris_menu = 6
-        kolom_lebar = Panjang_Header // 2
-        for i in range(baris_menu):
-            kolom_kiri = menu_items[i]
-            if i + baris_menu < len(menu_items):
-                kolom_kanan = menu_items[i + baris_menu] 
-            else:
-                kolom_kanan = ""
-            menu_line = f"{kolom_kiri.ljust(kolom_lebar)}{kolom_kanan.ljust(kolom_lebar)}"
-            print(menu_line[:Panjang_Header])
+        menu(data_pemain)
         print()
         cprint(f"{nama} {ekspresi}:", "yellow", end=" ")
         print(kalimat)
@@ -703,38 +714,15 @@ def menu_awal():
     return data_pemain, tutorial_sudah
 
 def tampilkan_menu_aksi(data_pemain, tutorial_sudah, notifikasi_layu):
-    bersihkan_layar()
-    status = f"🗓 HARI KE-{data_pemain['hari']} | 💰 UANG: ${data_pemain['uang']} | 🏦 HUTANG: ${data_pemain['hutang']} "
-    cprint(status.center(70), "white", 'on_blue')
-    tampilkan_lahan(data_pemain)
-    tampilkan_header("PILIH AKSI")
-    menu_items = [
-        "1. 🌱 Tanam Bibit", "2. 🛒 Pasar", "3. 💧 Siram Tanaman", "4. 🧺 Panen",
-        "5. 💸 Jual Hasil", "6. 🎒 Inventaris", "7.  🏞️  Perluas Lahan",
-        "8.  😴 Tidur", "9.  🏦 Bank", "10. ⚙️  Pengaturan",
-        "11. 💾 Simpan & Keluar"
-    ]
-    baris_menu = 6
-    kolom_lebar = Panjang_Header // 2
-    for i in range(baris_menu):
-        kolom_kiri = menu_items[i]
-        if i + baris_menu < len(menu_items):
-            kolom_kanan = menu_items[i + baris_menu] 
-        else:
-            kolom_kanan = ""
-        menu_line = f"{kolom_kiri.ljust(kolom_lebar)}{kolom_kanan.ljust(kolom_lebar)}"
-        print(menu_line[:Panjang_Header])
-
+    menu(data_pemain)
     if not tutorial_sudah:
         tampilkan_tutorial(data_pemain)
         tutorial_sudah = True
-
     if notifikasi_layu:
         for notif in notifikasi_layu:
             cprint(notif, "yellow")
         tekan_enter()
         notifikasi_layu.clear()
-
     aksi = input("> ")
     return aksi, tutorial_sudah
 
