@@ -8,7 +8,6 @@ import pyfiglet
 from rich.console import Console
 from rich.panel import Panel
 from rich.align import Align
-import shutil
 
 Save_File = "harvest_moon.txt"
 Musik_Utama = "Harvest Moon_ Back to Nature  Spring  OST.mp3"
@@ -612,7 +611,7 @@ def menu(data_pemain):
     "11. 💾 Simpan & Keluar"
 ]
     baris_menu = 6
-    kolom_lebar = Panjang_Header // 2
+    kolom_lebar = 36
     for i in range(baris_menu):
         kolom_kiri = menu_items[i]
         if i + baris_menu < len(menu_items):
@@ -644,12 +643,8 @@ def menu_awal():
     intro_berjalan = mainkan_musik_intro()
     data_pemain = None
     tutorial_sudah = False
-    width = shutil.get_terminal_size((80, 20)).columns
     while data_pemain is None:
         bersihkan_layar()
-        judul_game = pyfiglet.figlet_format(Judul)
-        judul_lines = judul_game.splitlines()
-        judul_width = max(len(baris) for baris in judul_lines)
         tampilkan_judul_besar(Judul, "yellow")
         emoji = "🌾🌻🥕🌽🥦🍅"
         garis_kiri = colored("=" * 30,"yellow")
@@ -665,19 +660,18 @@ def menu_awal():
             "[white on blue] 2. 💾  Lanjutkan Permainan   [/white on blue]\n\n"
             "[grey]Masukkan angka 1/2 lalu tekan Enter untuk memilih.[/grey]"
         )
-        panel_width = min(judul_width, width - 4)
         console.print(
             Panel(
                 Align.center(panel_text),
                 style="bold blue",
-                width=panel_width,
+                width=72,
                 border_style="bright_yellow"
             )
         )
         pilihan = input("> ")
         if pilihan == '1':
             if exists(Save_File):
-                console.print("[yellow]Memulai game baru akan menghapus data lama.[/yellow]")
+                cprint("Memulai game baru akan menghapus data lama","yellow")
                 print("Apakah kamu yakin ingin melanjutkan? (y/n)")
                 konfirmasi = input("> ").lower()
                 if konfirmasi == 'y':
