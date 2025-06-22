@@ -386,7 +386,7 @@ def perluas_lahan(data_pemain):
         return
         
     biaya = (data_pemain["baris_lahan"] * data_pemain["kolom_lahan"]) * 10
-    ukuran_baru = f"{data_pemain["baris_lahan"] + 1}x{data_pemain["kolom_lahan"] + 1}"
+    ukuran_baru = f"{data_pemain['baris_lahan'] + 1}x{data_pemain['kolom_lahan'] + 1}"
     tampilkan_pesan(f"Biaya perluasan menjadi {ukuran_baru} adalah ${biaya}", "info")
     
     pilihan = input("Perluas lahan? (y/n) ").lower()
