@@ -640,7 +640,7 @@ def tampilkan_tutorial(data_pemain):
 
 def menu_awal():
     console = Console()
-    intro_berjalan = mainkan_musik_intro()
+    mainkan_musik_intro()
     data_pemain = None
     tutorial_sudah = False
     while data_pemain is None:
@@ -676,15 +676,13 @@ def menu_awal():
                 konfirmasi = input("> ").lower()
                 if konfirmasi == 'y':
                     tampilkan_loading("Membuat game baru...")
-                    if intro_berjalan:
-                        pygame.mixer.music.stop()
+                    pygame.mixer.music.stop()
                     tampilkan_pesan("Game berhasil dimuat!", "sukses")
                     time.sleep(1.5)   
                     data_pemain = game_baru()
             else:
                 tampilkan_loading("Membuat game baru...")
-                if intro_berjalan:
-                    pygame.mixer.music.stop()
+                pygame.mixer.music.stop()
                 tampilkan_pesan("Game berhasil dimuat!", "sukses")
                 time.sleep(1.5)
                 data_pemain = game_baru()
@@ -692,8 +690,7 @@ def menu_awal():
             data_pemain = muat_game()
             if data_pemain:
                 tampilkan_loading("Memuat game...")
-                if intro_berjalan:
-                    pygame.mixer.music.stop()
+                pygame.mixer.music.stop()
                 tampilkan_pesan("Game berhasil dimuat!", "sukses")
                 time.sleep(1.5)
                 tutorial_sudah = True
@@ -727,6 +724,7 @@ def proses_aksi(aksi, data_pemain):
         tekan_enter()
     elif aksi == '2':
         pasar(data_pemain)
+        tekan_enter()
     elif aksi == '3':
         siram_tanaman(data_pemain)
         tekan_enter()
@@ -763,7 +761,6 @@ def proses_aksi(aksi, data_pemain):
 
 def main():
     bersihkan_layar()
-    tampilkan_judul_besar(Judul, "yellow")
     data_pemain, tutorial_sudah = menu_awal()
     inisialisasi_musik()
     if data_pemain.get("musik_nyala", True):
